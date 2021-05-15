@@ -1,23 +1,17 @@
-import logo from './logo.svg';
 import './App.css';
-
+import NavBar from './components/NavBar'
+import { Route} from 'react-router-dom';
+import AddProperty from './components/AddPropertyComponent';
+import PageList from './components/PageListComponent';
+//  import PropertyContext from './contexts/propertyContext';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <NavBar></NavBar>
+      <div className="content">
+        <Route path="/property" component={AddProperty}></Route>
+        <Route path="/properties" component={PageList}></Route>
+      </div>
     </div>
   );
 }
