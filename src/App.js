@@ -1,16 +1,29 @@
 import './App.css';
 import NavBar from './components/NavBar'
-import { Route} from 'react-router-dom';
-import AddProperty from './components/AddPropertyComponent';
-import PageList from './components/PageListComponent';
+// import { Route} from 'react-router-dom';
+import {
+  Switch,
+  Route,
+  Redirect
+} from "react-router-dom";
+
+import Routes from './app-routes/routes'
 //  import PropertyContext from './contexts/propertyContext';
 function App() {
   return (
     <div className="App">
       <NavBar></NavBar>
       <div className="content">
-        <Route path="/property" component={AddProperty}></Route>
-        <Route path="/properties" component={PageList}></Route>
+      <Routes></Routes>
+        <Switch>
+              <Route
+                exact
+                path="/"
+                render={() => {
+                    return (<Redirect to="/properties" />)
+                }}
+              />
+        </Switch>
       </div>
     </div>
   );

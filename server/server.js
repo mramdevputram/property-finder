@@ -47,7 +47,7 @@ async function getProperties(req, res) {
         let properties = db.collection('Properties')
         properties.createIndex({ area: "text" })
         
-        let priceAray = req.query.priceRange !== '' && req.query.priceRange !== 'None' ? req.query.priceRange.split(',') : []
+        let priceAray = req.query.priceRange && req.query.priceRange !== '' && req.query.priceRange !== 'None' ? req.query.priceRange.split(',') : []
         let min = priceAray && priceAray.length ? parseFloat(priceAray[0]) : ''
         let max = priceAray && priceAray.length ? parseFloat(priceAray[1]) : ''
         
@@ -55,6 +55,7 @@ async function getProperties(req, res) {
         if (min !== '' && max !== '') {
             findQuery['price'] = { $gte: min, $lte: max }
         }
+        console.log("findQuery",findQuery)
         let pArray = await properties.find(findQuery).sort({ createdAt: -1 }).toArray()
         let recentList = await properties.find().sort({ lastviewedAt: -1 }).limit(6).toArray()
 
