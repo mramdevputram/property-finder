@@ -90,7 +90,6 @@ class PropertyList extends Component {
                               <span>Posted {new Date().getDay() - new Date(val.createdAt).getDay() == 0 ? 'Today' : new Date().getDay() - new Date(val.createdAt).getDay() +' Days Ago'}</span>
                           </div>
                         </div>
-                    
                     );
                   })  : <div  className="col-md-12 mt-50 mb-10 label label-primary"><h3 className="label label-primary">No Properties Added.</h3></div>
                   

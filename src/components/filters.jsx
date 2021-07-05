@@ -27,7 +27,7 @@ const Filters = (props) => {
               <option value={'500000,1000000'}>5L TO 10L</option>
               <option value={'1000000,2000000'}>10L TO 20L</option>
               <option value={'2000000,3000000'}>20L TO 30L</option>
-            </select>
+        </select>
         <button type="button" onClick={() => props.getFilterData(null,null,filters)} className="btn btn-primary" style={{marginTop: '20px'}}>Apply</button>
       </form> );
 }
