@@ -22,6 +22,12 @@ app.set('views', path.join(process.env.PWD, 'views'));
 app.set('view engine', 'html');
 const router = express.Router();
 const MONGO_DB_URL = `mongodb://localhost:27017/Property`;
+const { Sequelize, Op, Model, DataTypes } = require("sequelize");
+
+const propertySchema = require('./models/Property-Schema')
+const config = require('./config');
+const cons = require('consolidate');
+
 
 /* 
    Get,Save,Update Properties
@@ -42,7 +48,15 @@ app.use(router)
 */
 async function getProperties(req, res) {
     let db = await mongoose.createConnection(MONGO_DB_URL)
+    const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
+    const propertyTable = sequelize.define('Properties', propertySchema);
     try {
+        await sequelize.authenticate();
+        let propertiesData =  await propertyTable.findAll();
+        let data = JSON.stringify(propertiesData, null, 2)
+        // console.log(':  - - - ',propertiesData)
+        console.log("All Props - - :",data );
+
         let searchTxt = req.query.search
         let properties = db.collection('Properties')
         properties.createIndex({ area: "text" })
@@ -55,7 +69,6 @@ async function getProperties(req, res) {
         if (min !== '' && max !== '') {
             findQuery['price'] = { $gte: min, $lte: max }
         }
-        console.log("findQuery",findQuery)
         let pArray = await properties.find(findQuery).sort({ createdAt: -1 }).toArray()
         let recentList = await properties.find().sort({ lastviewedAt: -1 }).limit(6).toArray()
 
@@ -85,9 +98,14 @@ async function getProperties(req, res) {
 */
 async function saveProperties(req, res) {
     let db = await mongoose.createConnection(MONGO_DB_URL)
+    const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
+    const propertyTable = sequelize.define('Properties', propertySchema);
+    await propertyTable.sync({})
     try {
+
         let properties = db.collection('Properties')
         let addObj = req.body
+        
         addObj['price'] = parseFloat(addObj['price'])
         addObj['createdAt'] = new Date()
         addObj['viewCount'] = 0
@@ -96,6 +114,17 @@ async function saveProperties(req, res) {
             addObj['imgs'] = images
             addObj['thumbNails'] = thumbNails
         }
+        let {imgs,thumbNails} = addObj
+        imgs = imgs.join(',')
+        thumbNails = thumbNails.join(',')
+        let saveSql = {...addObj}
+        saveSql['imgs'] = imgs
+        saveSql['thumbNails'] = thumbNails
+       
+        console.log("saveSql",saveSql)
+        /* Add Data In SQL  */
+        let addToSql = await propertyTable.create(saveSql);
+        
         let saveObj = await properties.insert(addObj)
         const apiResponse = {
             "code": 200,
@@ -179,7 +208,6 @@ async function updateProperties(req, res) {
     try {
         let properties = db.collection('Properties')
         let propertyId = mongoose.Types.ObjectId(req.body._id)
-        console.log("req.body.isFavorite: ", req.body.isFavorite)
         let updateQuery = req.body.for == 'Favorite' ? { $set: { isFavorite: req.body.isFavorite, 'updatedAt': new Date() } } : { $set: { 'lastviewedAt': new Date() }, $inc: { viewCount: 1 } }
         let updaeObj = await properties.update({ _id: propertyId }, updateQuery)
         const apiResponse = {
