@@ -27,6 +27,7 @@ const { Sequelize, Op, Model, DataTypes } = require("sequelize");
 const propertySchema = require('./models/Property-Schema')
 const config = require('./config');
 const cons = require('consolidate');
+const mysql = require('mysql2/promise');
 
 
 /* 
@@ -47,35 +48,50 @@ app.use(router)
    auther: @Matang 
 */
 async function getProperties(req, res) {
-    let db = await mongoose.createConnection(MONGO_DB_URL)
+    // let db = await mongoose.createConnection(MONGO_DB_URL)
+    const connection = await mysql.createConnection({ host:config.conn.host,port: config.conn.port, user:config.dbUser, password:config.dbPass });
+    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${config.dbName}\`;`);
+
     const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
     const propertyTable = sequelize.define('Properties', propertySchema);
+    await propertyTable.sync({ alter: true })
     try {
         await sequelize.authenticate();
-        let propertiesData =  await propertyTable.findAll();
-        let data = JSON.stringify(propertiesData, null, 2)
-        // console.log(':  - - - ',propertiesData)
-        console.log("All Props - - :",data );
-
+        // let propertiesData =  await propertyTable.findAll();
+        
+        
         let searchTxt = req.query.search
-        let properties = db.collection('Properties')
-        properties.createIndex({ area: "text" })
+        // let properties = db.collection('Properties')
+        // properties.createIndex({ area: "text" })
         
         let priceAray = req.query.priceRange && req.query.priceRange !== '' && req.query.priceRange !== 'None' ? req.query.priceRange.split(',') : []
         let min = priceAray && priceAray.length ? parseFloat(priceAray[0]) : ''
         let max = priceAray && priceAray.length ? parseFloat(priceAray[1]) : ''
-        
+        let findSqlQry = {where: {},order: [['createdAt', 'DESC']]}
         let findQuery = searchTxt && searchTxt !== '' ? { $text: { $search: searchTxt } } : {}
+        if(searchTxt && searchTxt !== ''){
+            findSqlQry['where']['area'] ={ [Op.substring]: searchTxt}
+        }
         if (min !== '' && max !== '') {
             findQuery['price'] = { $gte: min, $lte: max }
+            findSqlQry['where']['price'] = {
+                    [Op.gte]: min,
+                    [Op.lte]: max
+                  }
         }
-        let pArray = await properties.find(findQuery).sort({ createdAt: -1 }).toArray()
-        let recentList = await properties.find().sort({ lastviewedAt: -1 }).limit(6).toArray()
+        
+        let propertiesData =  await propertyTable.findAll(findSqlQry);
+        let propertyList = propertiesData ?  JSON.parse(JSON.stringify(propertiesData, null, 2)) : [];
+        // let pArray = await properties.find(findQuery).sort({ createdAt: -1 }).toArray()
+        // let recentList = await properties.find().sort({ lastviewedAt: -1 }).limit(6).toArray()
+
+        let recentList =  await propertyTable.findAll({where: {},order: [['lastviewedAt', 'DESC']]});
+
 
         const apiResponse = {
             "code": 200,
             "message": 'success',
-            "data": { propertyList: pArray, recentList }
+            "data": { propertyList, recentList}
         }
         res.json(apiResponse).end();
     } catch (e) {
@@ -97,13 +113,13 @@ async function getProperties(req, res) {
    auther: @Matang 
 */
 async function saveProperties(req, res) {
-    let db = await mongoose.createConnection(MONGO_DB_URL)
+    // let db = await mongoose.createConnection(MONGO_DB_URL)
     const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
     const propertyTable = sequelize.define('Properties', propertySchema);
     await propertyTable.sync({})
     try {
 
-        let properties = db.collection('Properties')
+        // let properties = db.collection('Properties')
         let addObj = req.body
         
         addObj['price'] = parseFloat(addObj['price'])
@@ -114,23 +130,14 @@ async function saveProperties(req, res) {
             addObj['imgs'] = images
             addObj['thumbNails'] = thumbNails
         }
-        let {imgs,thumbNails} = addObj
-        imgs = imgs.join(',')
-        thumbNails = thumbNails.join(',')
-        let saveSql = {...addObj}
-        saveSql['imgs'] = imgs
-        saveSql['thumbNails'] = thumbNails
        
-        console.log("saveSql",saveSql)
+        let saveSql = {...addObj}
+       
         /* Add Data In SQL  */
         let addToSql = await propertyTable.create(saveSql);
         
-        let saveObj = await properties.insert(addObj)
-        const apiResponse = {
-            "code": 200,
-            "message": 'success',
-            "data": null
-        }
+        // let saveObj = await properties.insert(addObj)
+        const apiResponse = {"code": 200,"message": 'success',"data": null}
         res.json(apiResponse).end();
     } catch (e) {
         console.log("Save Properties Err: -", e)
@@ -141,7 +148,7 @@ async function saveProperties(req, res) {
         }
         res.json(apiResponse).end();
     } finally {
-        db.close()
+        // db.close()
     }
 }
 
@@ -204,17 +211,20 @@ async function uploadImages(files, propertyName) {
    auther: @Matang 
 */
 async function updateProperties(req, res) {
-    let db = await mongoose.createConnection(MONGO_DB_URL)
+    // let db = await mongoose.createConnection(MONGO_DB_URL)
+    const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
+    const propertyTable = sequelize.define('Properties', propertySchema);
+    await propertyTable.sync({})
     try {
-        let properties = db.collection('Properties')
-        let propertyId = mongoose.Types.ObjectId(req.body._id)
+        // let properties = db.collection('Properties')
+        let propertyId = req.body.id
         let updateQuery = req.body.for == 'Favorite' ? { $set: { isFavorite: req.body.isFavorite, 'updatedAt': new Date() } } : { $set: { 'lastviewedAt': new Date() }, $inc: { viewCount: 1 } }
-        let updaeObj = await properties.update({ _id: propertyId }, updateQuery)
-        const apiResponse = {
-            "code": 200,
-            "message": 'success',
-            "data": null
-        }
+        
+        let updateSqlQuery = req.body.for == 'Favorite' ? { isFavorite: req.body.isFavorite, 'updatedAt': new Date() }  : { 'lastviewedAt': new Date(),viewCount: Sequelize.literal('viewCount + 1')  }
+
+        // let updaeObj = await properties.update({ isFavorite: req.body.isFavorite }, updateQuery)
+        let updateProperty = await propertyTable.update(updateSqlQuery, {where: {id: propertyId}});
+        const apiResponse = {"code": 200,"message": 'success',"data": null}
         res.json(apiResponse).end();
     } catch (e) {
         console.log("Update Properties Err: -", e)
@@ -225,7 +235,7 @@ async function updateProperties(req, res) {
         }
         res.json(apiResponse).end();
     } finally {
-        db.close()
+        // db.close()
     }
 }
 

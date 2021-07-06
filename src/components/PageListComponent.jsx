@@ -27,13 +27,15 @@ class PropertyList extends Component {
         const {data} = await axios.get(`${ApiBaseUrl}/properties`,params)
         const propertyList = data.data ? data.data.propertyList : []
         const recentList = data.data ? data.data.recentList : []
+        const sqlData = data.data ? data.data.sqlData : [] 
+        console.log("sqlData:  - - ",sqlData)
         let {isDetailedPage} = this.state
         isDetailedPage = isDetails ? true : false
         this.setState({ propertyList,recentList,isDetailedPage, property })
     }
     
     async setProperty(property,isFavorite) {
-        let obj = {_id: property._id}
+        let obj = {id: property.id}
         obj['isFavorite'] =  isFavorite ? !property['isFavorite'] : property['isFavorite']
         obj['for'] = isFavorite ? 'Favorite' : 'ViewCount'
         const {data} = await axios.put(`${ApiBaseUrl}/properties`,obj)   

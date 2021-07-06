@@ -9,7 +9,7 @@ const Property = {
       type: DataTypes.STRING
     },
     imgs: {
-      type: DataTypes.STRING
+      type: DataTypes.JSON
     },
     address: {
       type: DataTypes.STRING
@@ -40,11 +40,19 @@ const Property = {
       type: DataTypes.INTEGER
     },
     thumbNails: {
-      type: DataTypes.STRING
+      type: DataTypes.JSON
     },
     lastviewedAt: {
       type: DataTypes.DATE,
       defaultValue: new Date()
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: new Date()
+    },
+    isFavorite:{
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   }
   module.exports = Property;
