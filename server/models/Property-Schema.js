@@ -1,5 +1,5 @@
-const {  DataTypes } = require('sequelize');
-
+const {  DataTypes,Sequelize } = require('sequelize');
+const config = require('../config');
 const Property = {
     // Model attributes are defined here
     name: {
@@ -55,6 +55,9 @@ const Property = {
       defaultValue: false
     }
   }
-  module.exports = Property;
+
+  const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
+  const propertyTable = sequelize.define('Properties', Property,{timestamps: true});
+  module.exports = propertyTable;
 
   

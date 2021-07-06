@@ -24,11 +24,11 @@ const router = express.Router();
 const MONGO_DB_URL = `mongodb://localhost:27017/Property`;
 const { Sequelize, Op, Model, DataTypes } = require("sequelize");
 
-const propertySchema = require('./models/Property-Schema')
+const propertyTable = require('./models/Property-Schema');
 const config = require('./config');
 const cons = require('consolidate');
 const mysql = require('mysql2/promise');
-
+const { Console } = require('console');
 
 /* 
    Get,Save,Update Properties
@@ -46,8 +46,13 @@ initialize()
 
 /* Init DB is not Exists */
 async function initialize(){
-    const connection = await mysql.createConnection({ host:config.conn.host,port: config.conn.port, user:config.dbUser, password:config.dbPass });
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${config.dbName}\`;`);
+    try{
+        const connection = await mysql.createConnection({ host:config.conn.host,port: config.conn.port, user:config.dbUser, password:config.dbPass });
+        let conn = await connection.query(`CREATE DATABASE IF NOT EXISTS \`${config.dbName}\`;`);
+        console.log("conn",conn)
+    }catch(e){
+        console.log("DB Connection Err:",e)
+    }
 }
 
 /* 
@@ -55,19 +60,11 @@ async function initialize(){
    auther: @Matang 
 */
 async function getProperties(req, res) {
-    // let db = await mongoose.createConnection(MONGO_DB_URL)
-   
     const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
-    const propertyTable = sequelize.define('Properties', propertySchema);
     await propertyTable.sync({ alter: true })
     try {
-        await sequelize.authenticate();
-        // let propertiesData =  await propertyTable.findAll();
-        
-        
-        let searchTxt = req.query.search
-        // let properties = db.collection('Properties')
-        // properties.createIndex({ area: "text" })
+        let isConnected = await sequelize.authenticate(); 
+        let {search: searchTxt} = req.query
         
         let priceAray = req.query.priceRange && req.query.priceRange !== '' && req.query.priceRange !== 'None' ? req.query.priceRange.split(',') : []
         let min = priceAray && priceAray.length ? parseFloat(priceAray[0]) : ''
@@ -89,12 +86,8 @@ async function getProperties(req, res) {
 
         let recentList =  await propertyTable.findAll({where: {},order: [['lastviewedAt', 'DESC']]});
 
-
-        const apiResponse = {
-            "code": 200,
-            "message": 'success',
-            "data": { propertyList, recentList}
-        }
+        /* Temporary Response as its Practical other wise can be do from Comman Service Only */
+        const apiResponse = {"code": 200,"message": 'success',"data": { propertyList, recentList}}
         res.json(apiResponse).end();
     } catch (e) {
         console.log("Get Properties Err: -", e)
@@ -104,8 +97,6 @@ async function getProperties(req, res) {
             "data": null
         }
         res.json(apiResponse).end();
-    } finally {
-        // db.close()
     }
 
 }
@@ -115,13 +106,10 @@ async function getProperties(req, res) {
    auther: @Matang 
 */
 async function saveProperties(req, res) {
-    // let db = await mongoose.createConnection(MONGO_DB_URL)
     const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
-    const propertyTable = sequelize.define('Properties', propertySchema,{timestamps: true});
     await propertyTable.sync({})
     try {
-
-        // let properties = db.collection('Properties')
+        let isConnected = await sequelize.authenticate();
         let addObj = req.body
         
         addObj['price'] = parseFloat(addObj['price'])
@@ -137,7 +125,7 @@ async function saveProperties(req, res) {
         /* Add Data In SQL  */
         let addToSql = await propertyTable.create(saveSql);
         
-        // let saveObj = await properties.insert(addObj)
+        /* Temporary Response as its Practical other wise can be do from Comman Service Only */
         const apiResponse = {"code": 200,"message": 'success',"data": null}
         res.json(apiResponse).end();
     } catch (e) {
@@ -148,8 +136,6 @@ async function saveProperties(req, res) {
             "data": null
         }
         res.json(apiResponse).end();
-    } finally {
-        // db.close()
     }
 }
 
@@ -212,19 +198,18 @@ async function uploadImages(files, propertyName) {
    auther: @Matang 
 */
 async function updateProperties(req, res) {
-    // let db = await mongoose.createConnection(MONGO_DB_URL)
     const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
-    const propertyTable = sequelize.define('Properties', propertySchema);
     await propertyTable.sync({})
     try {
-        // let properties = db.collection('Properties')
+        let isConnected = await sequelize.authenticate();
         let propertyId = req.body.id
         let updateQuery = req.body.for == 'Favorite' ? { $set: { isFavorite: req.body.isFavorite, 'updatedAt': new Date() } } : { $set: { 'lastviewedAt': new Date() }, $inc: { viewCount: 1 } }
         
         let updateSqlQuery = req.body.for == 'Favorite' ? { isFavorite: req.body.isFavorite, 'updatedAt': new Date() }  : { 'lastviewedAt': new Date(),viewCount: Sequelize.literal('viewCount + 1')  }
 
-        // let updaeObj = await properties.update({ isFavorite: req.body.isFavorite }, updateQuery)
         let updateProperty = await propertyTable.update(updateSqlQuery, {where: {id: propertyId}});
+        
+        /* Temporary Response as its Practical other wise can be do from Comman Service Only */
         const apiResponse = {"code": 200,"message": 'success',"data": null}
         res.json(apiResponse).end();
     } catch (e) {
@@ -235,8 +220,6 @@ async function updateProperties(req, res) {
             "data": null
         }
         res.json(apiResponse).end();
-    } finally {
-        // db.close()
     }
 }
 
