@@ -120,7 +120,7 @@ async function getProperties(req, res) {
 async function saveProperties(req, res) {
     // let db = await mongoose.createConnection(MONGO_DB_URL)
     const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
-    const propertyTable = sequelize.define('Properties', propertySchema);
+    const propertyTable = sequelize.define('Properties', propertySchema,{timestamps: true});
     await propertyTable.sync({})
     try {
 
@@ -128,7 +128,7 @@ async function saveProperties(req, res) {
         let addObj = req.body
         
         addObj['price'] = parseFloat(addObj['price'])
-        addObj['createdAt'] = new Date()
+        // addObj['createdAt'] = new Date()
         addObj['viewCount'] = 0
         if (addObj['imgs'].length) {
             let { thumbNails, images } = await uploadImages(addObj['imgs'], addObj.name)

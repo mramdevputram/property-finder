@@ -4,6 +4,7 @@
 /server/node_modules
 /node_modules
 /.pnp
+/server/property_Image
 .pnp.js
 
 # testing
