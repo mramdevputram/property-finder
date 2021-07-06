@@ -73,12 +73,11 @@ async function getProperties(req, res) {
         let min = priceAray && priceAray.length ? parseFloat(priceAray[0]) : ''
         let max = priceAray && priceAray.length ? parseFloat(priceAray[1]) : ''
         let findSqlQry = {where: {},order: [['createdAt', 'DESC']]}
-        let findQuery = searchTxt && searchTxt !== '' ? { $text: { $search: searchTxt } } : {}
+        
         if(searchTxt && searchTxt !== ''){
             findSqlQry['where']['area'] ={ [Op.substring]: searchTxt}
         }
         if (min !== '' && max !== '') {
-            findQuery['price'] = { $gte: min, $lte: max }
             findSqlQry['where']['price'] = {
                     [Op.gte]: min,
                     [Op.lte]: max
@@ -87,8 +86,6 @@ async function getProperties(req, res) {
         
         let propertiesData =  await propertyTable.findAll(findSqlQry);
         let propertyList = propertiesData ?  JSON.parse(JSON.stringify(propertiesData, null, 2)) : [];
-        // let pArray = await properties.find(findQuery).sort({ createdAt: -1 }).toArray()
-        // let recentList = await properties.find().sort({ lastviewedAt: -1 }).limit(6).toArray()
 
         let recentList =  await propertyTable.findAll({where: {},order: [['lastviewedAt', 'DESC']]});
 
@@ -108,7 +105,7 @@ async function getProperties(req, res) {
         }
         res.json(apiResponse).end();
     } finally {
-        db.close()
+        // db.close()
     }
 
 }
@@ -128,7 +125,6 @@ async function saveProperties(req, res) {
         let addObj = req.body
         
         addObj['price'] = parseFloat(addObj['price'])
-        // addObj['createdAt'] = new Date()
         addObj['viewCount'] = 0
         if (addObj['imgs'].length) {
             let { thumbNails, images } = await uploadImages(addObj['imgs'], addObj.name)
