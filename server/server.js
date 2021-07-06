@@ -41,7 +41,14 @@ router.route('/properties')
 
 app.use(router)
 
+initialize()
 
+
+/* Init DB is not Exists */
+async function initialize(){
+    const connection = await mysql.createConnection({ host:config.conn.host,port: config.conn.port, user:config.dbUser, password:config.dbPass });
+    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${config.dbName}\`;`);
+}
 
 /* 
    Get Properties With/Without Filter
@@ -49,9 +56,7 @@ app.use(router)
 */
 async function getProperties(req, res) {
     // let db = await mongoose.createConnection(MONGO_DB_URL)
-    const connection = await mysql.createConnection({ host:config.conn.host,port: config.conn.port, user:config.dbUser, password:config.dbPass });
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${config.dbName}\`;`);
-
+   
     const sequelize = new Sequelize(config.dbName, config.dbUser, config.dbPass, config.conn);
     const propertyTable = sequelize.define('Properties', propertySchema);
     await propertyTable.sync({ alter: true })
