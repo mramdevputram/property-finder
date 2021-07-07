@@ -1,5 +1,5 @@
 import './App.css';
-import NavBar from './components/NavBar'
+// import NavBar from './components/NavBar'
 // import { Route} from 'react-router-dom';
 import {
   Switch,
@@ -7,14 +7,21 @@ import {
   Redirect
 } from "react-router-dom";
 
-import Routes from './app-routes/routes'
+import React, { Suspense } from "react";
+// import Routes from './app-routes/routes'
+
+const NavBarComponent = React.lazy(() => import("./components/NavBar"));
+const RoutesComponents = React.lazy(() =>import("./app-routes/routes"));
+
 //  import PropertyContext from './contexts/propertyContext';
 function App() {
   return (
     <div className="App">
-      <NavBar></NavBar>
-      <div className="content">
-      <Routes></Routes>
+      <Suspense fallback={<div>Loading</div>}>
+          <NavBarComponent label="NavBarComponent" />
+          <RoutesComponents label="RoutesComponents" />
+      </Suspense>
+      <div>
         <Switch>
               <Route
                 exact

@@ -48,8 +48,8 @@ class AddProperty extends Component {
      submitProperty = async (e) => {
         e.preventDefault()
         let {property} = this.state
-        const {data} = await axios.post(`${ApiBaseUrl}/properties`,property)
-        this.props.history.push("/properties")
+        const response = await axios.post(`${ApiBaseUrl}/properties`,property)
+        if(response && response.data && response.data.code == 200) this.props.history.push("/properties")
     }
 
     render() { 

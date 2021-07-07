@@ -6,7 +6,6 @@ const SlideBar = ({property,onListPage}) => {
     let images =  property.imgs.map(val => {
         return `${ApiBaseUrl}/${val}`
     })  
-    console.log("images",images)  
     return (
       <div className="row">
         <div className="col-md-12">
