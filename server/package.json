@@ -8,5 +8,10 @@
     "start": "nodemon server.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express-validator": "^2.21.0",
+    "util": "^0.12.4",
+    "winston": "^3.3.3"
+  }
 }

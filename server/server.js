@@ -2,6 +2,10 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const app = express();
+
+var expressValidator = require('express-validator');
+app.use(expressValidator());  //this line to be addded
+
 const helmet = require('helmet');
 /* For making Images & Thumbnais Acceble Directly From Property_Image Folder*/
 app.use(express.static('property_Image/'));
@@ -10,6 +14,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
+
+
 
 app.use(cors());
 app.set('views', path.join(process.env.PWD, 'views'));

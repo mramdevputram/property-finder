@@ -4,6 +4,8 @@ const propertyService = require('../services/property.service')
 const Sharp = require('sharp');
 const fs = require('fs');
 const fse = require('fs-extra');
+const {validate} = require('../validate')
+const { check, oneOf, validationResult } = require('express-validator');
 
 
 router.route('/properties')
@@ -43,6 +45,7 @@ async function saveProperties(req, res) {
         let document = {
             ...req.body
         }
+        
         document['price'] = parseFloat(document['price'])
         document['viewCount'] = 0
         if (document['imgs'].length) {
@@ -50,7 +53,10 @@ async function saveProperties(req, res) {
             document['imgs'] = images
             document['thumbNails'] = thumbNails
         }
-       
+        
+        let validation = validate(req,res,document)
+        if(!validation.success) return res.json(validation).end();
+
         let saveDataMessage = await propertyService.saveProperty(document)
         
         /* Temporary Response as its Practical other wise can be do from Comman Service Only */
@@ -119,6 +125,9 @@ async function updateProperties(req, res) {
         let document = {
             ...req.body
         }
+        let validation = validate(req,res,document)
+        if(!validation.success) return res.json(validation).end();
+        
         let updateDataMessage = await propertyService.updateProperties(document)
 
         /* Temporary Response as its Practical other wise can be do from Comman Service Only */
