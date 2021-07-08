@@ -4,8 +4,8 @@ import ApiBaseUrl from '../service';
 import { async } from 'q';
 class AddProperty extends Component {
 
-    state = { property: 
-        {
+    state = { 
+      property: {
             name: '',
             description: '',
             imgs: [],
@@ -15,12 +15,24 @@ class AddProperty extends Component {
             bedroom: 1,
             bath: 1,
             carpetArea: '',
-            carpetAreaUnit: ''
-    } }
+            carpetAreaUnit: 'Sq. Yd.'
+    },
+      errors: {}
+            // name: 'name is required.',
+      // description: 'description is required.',
+      // imgs: 'images is required.',
+      // address: 'address is required.',
+      // area: 'area is required.',
+      // price: 'price is required.',
+      // bedroom: 'bedroom is required.',
+      // bath: 'bath is required.',
+      // carpetArea: 'carpet area is required.',
+      // carpetAreaUnit: 'carpet area unit is required.' 
+  }
 
     
 
-    handleChange = ({currentTarget: input}) => {
+    handleChange = async ({currentTarget: input}) => {
         const property = {...this.state.property}
         property[input.name] = input.value
         this.setState({ property })
@@ -34,8 +46,7 @@ class AddProperty extends Component {
             imgs.push(base64File)
         }
         property['imgs'] = imgs
-        this.setState({ property })
-
+        await this.setState({ property })
     }
 
     toBase64 = file => new Promise((resolve, reject) => {
@@ -45,8 +56,49 @@ class AddProperty extends Component {
         reader.onerror = error => reject(error);
     });
 
+    validate = async () => {
+      const errors = {}
+      const { property } = this.state
+      console.log("property",property)
+      if(property.name.trim() == '') 
+        errors.name = 'name is required'
+
+      if(property.description.trim() == '') 
+        errors.description = 'description is required'  
+
+      if(!property.imgs.length) 
+        errors.imgs = 'images is required'
+
+      if(property.address.trim() == '') 
+        errors.address = 'address is required'  
+
+      if(property.area.trim() == '') 
+        errors.area = 'area is required'
+
+      if(property.price.trim() == '') 
+        errors.price = 'price is required'  
+
+      if(![1,2,3,4,5].includes(property.bedroom)) 
+        errors.bedroom = 'bedroom is required'
+
+      if(![1,2,3,4,5].includes(property.bath)) 
+        errors.bath = 'bath is required'
+
+      if(property.carpetArea.trim() == '') 
+        errors.carpetArea = 'carpet area is required'
+
+      if(!['Sq. Yd.','Sq. Ft.','Sq. Mt.'].includes(property.bath)) 
+        errors.carpetAreaUnit = 'carpet area unit is required'
+      
+      return Object.keys(errors).length === 0 ? null : errors
+    }
+
      submitProperty = async (e) => {
         e.preventDefault()
+        const errors = await this.validate();
+        await this.setState({ errors })
+        
+        if(errors) return;
         let {property} = this.state
         const response = await axios.post(`${ApiBaseUrl}/properties`,property)
         if(response && response.data && response.data.code == 200) this.props.history.push("/properties")
@@ -80,6 +132,7 @@ class AddProperty extends Component {
                       aria-describedby="emailHelp"
                       placeholder="Enter Name"
                     />
+                    {this.state.errors && this.state.errors.name && <div className="alert-danger">{this.state.errors.name}</div>}
                     {/* <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small> */}
                   </div>
                   <div className="form-group">
@@ -91,6 +144,7 @@ class AddProperty extends Component {
                       id="description"
                       rows="1"
                     ></textarea>
+                    {this.state.errors && this.state.errors.description && <div className="alert-danger">{this.state.errors.description}</div>}
                   </div>
                   <div className="form-group">
                     <label htmlFor="images">Add Images</label>
@@ -103,6 +157,7 @@ class AddProperty extends Component {
                       className="form-control-file"
                       id="images"
                     />
+                    {this.state.errors && this.state.errors.imgs && <div className="alert-danger">{this.state.errors.imgs}</div>}
                   </div>
                   <div className="form-group">
                     <label htmlFor="address">Address</label>
@@ -113,6 +168,7 @@ class AddProperty extends Component {
                       id="address"
                       rows="1"
                     ></textarea>
+                    {this.state.errors && this.state.errors.address && <div className="alert-danger">{this.state.errors.address}</div>}
                   </div>
                   <div className="form-group">
                     <label htmlFor="area" name="area">
@@ -125,6 +181,7 @@ class AddProperty extends Component {
                       id="area"
                       rows="1"
                     ></textarea>
+                    {this.state.errors && this.state.errors.area && <div className="alert-danger">{this.state.errors.area}</div>}
                   </div>
   
                   <div className="form-group">
@@ -138,6 +195,7 @@ class AddProperty extends Component {
                       aria-describedby="emailHelp"
                       placeholder="Enter Price"
                     />
+                    {this.state.errors && this.state.errors.price && <div className="alert-danger">{this.state.errors.price}</div>}
                     {/* <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small> */}
                   </div>
                   <div className="form-group">
@@ -154,6 +212,7 @@ class AddProperty extends Component {
                       <option>4</option>
                       <option>5</option>
                     </select>
+                    {this.state.errors && this.state.errors.bedroom && <div className="alert-danger">{this.state.errors.bedroom}</div>}
                   </div>
                   <div className="form-group">
                     <label htmlFor="bath">Bath</label>
@@ -169,6 +228,7 @@ class AddProperty extends Component {
                       <option>4</option>
                       <option>5</option>
                     </select>
+                    {this.state.errors && this.state.errors.bath && <div className="alert-danger">{this.state.errors.bath}</div>}
                   </div>
   
                   <div className="form-group">
@@ -184,16 +244,19 @@ class AddProperty extends Component {
                       aria-describedby="emailHelp"
                       placeholder="Enter Carpet Area"
                     />
+                    {this.state.errors && this.state.errors.carpetArea && <div className="alert-danger">{this.state.errors.carpetArea}</div>}
                     <select
+                      defaultValue='Sq. Yd.'
                       onChange={this.handleChange}
                       className="form-control"
                       id="carpet"
                       name="carpetAreaUnit"
                     >
-                      <option>Sq. Ft.</option>
-                      <option>Sq. Yd.</option>
-                      <option>Sq. Mt.</option>
+                      <option value='Sq. Ft.'>Sq. Ft.</option>
+                      <option value='Sq. Yd.'>Sq. Yd.</option>
+                      <option value='Sq. Mt.'>Sq. Mt.</option>
                     </select>
+                    {this.state.errors && this.state.errors.carpetAreaUnit && <div className="alert-danger">{this.state.errors.carpetAreaUnit}</div>}
                   </div>
   
                   <button type="submit" className="btn btn-primary">

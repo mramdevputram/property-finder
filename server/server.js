@@ -26,7 +26,7 @@ require('./routes/routes').routes(app)
 
 
 const config = require('./config');
-const cons = require('consolidate');
+// const cons = require('consolidate');
 const mysql = require('mysql2/promise');
 
 
