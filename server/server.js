@@ -38,7 +38,7 @@ async function initialize(){
     try{
         const connection = await mysql.createConnection({ host:config.conn.host,port: config.conn.port, user:config.dbUser, password:config.dbPass });
         let conn = await connection.query(`CREATE DATABASE IF NOT EXISTS \`${config.dbName}\`;`);
-        console.log("conn",conn)
+        console.log("DB Connected Successfully!")
     }catch(e){
         console.log("DB Connection Err:",e)
     }

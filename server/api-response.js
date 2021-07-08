@@ -6,6 +6,8 @@ const logger = winston.createLogger({
   ]
 });
 
+
+
 const setSuccessResponse = function(res_code, message, data) {
     const apiResponse = {
         "code": res_code,
@@ -20,7 +22,7 @@ const setFailureResponse = function(err) {
         let keys = Object.keys(err['errors']);
         err = keys.map(val => err['errors'][val]['message']).join(',')
     }
-   
+    logger.log('error',err,'my string')
     const apiResponse = {
         "code": 400,
         "message": "Bad Request. Please see data for inner exception.",
@@ -43,7 +45,8 @@ const setSystemFailureResponse = function(err) {
             "errMsg": err
         }
     }
-    logger.log('error', err, 'my string');
+    console.log("err: ",err)
+    logger.log('error',err)
     return apiResponse;
 }
 

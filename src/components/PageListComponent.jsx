@@ -28,6 +28,7 @@ class PropertyList extends Component {
 
         let params = {params: filter}
         const {data} = await axios.get(`${ApiBaseUrl}/properties`,params)
+        console.log("data",data)
         const propertyList = data.data ? this.state.propertyList.concat(data.data.propertyList)  : []
         if(Number(data.data.count) == Number(propertyList.length)){
           var allDataLoaded = true
