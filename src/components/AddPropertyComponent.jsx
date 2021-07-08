@@ -56,6 +56,10 @@ class AddProperty extends Component {
         reader.onerror = error => reject(error);
     });
 
+
+
+
+
     validate = async () => {
       const errors = {}
       const { property } = this.state
