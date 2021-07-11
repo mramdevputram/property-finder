@@ -1,7 +1,7 @@
 const config = {
     dbName: 'SQLProperty',
     dbUser: 'root',
-    dbPass: 'Admin@123',
+    dbPass: 'Mats@123',
     conn:{
         host: 'localhost',
         dialect: 'mysql',
