@@ -91,7 +91,7 @@ class AddProperty extends Component {
       if(property.carpetArea.trim() == '') 
         errors.carpetArea = 'carpet area is required'
 
-      if(!['Sq. Yd.','Sq. Ft.','Sq. Mt.'].includes(property.bath)) 
+      if(!['Sq. Yd.','Sq. Ft.','Sq. Mt.'].includes(property.carpetAreaUnit)) 
         errors.carpetAreaUnit = 'carpet area unit is required'
       
       return Object.keys(errors).length === 0 ? null : errors

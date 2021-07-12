@@ -77,11 +77,11 @@ class PropertyList extends Component {
                 dataLength={this.state.propertyList.length}
                 next={this.scrollData}
                 hasMore={!this.state.allDataLoaded}
-                loader={<h4>Loading...</h4>}
+                loader={this.state.propertyList.length ? <h4>Loading...</h4> : ''}
                 scrollableTarget="scrollableDiv"
               >
                 {
-                  this.state.propertyList.map((val,key) => {
+                  this.state.propertyList && this.state.propertyList.length ? this.state.propertyList.map((val,key) => {
                     return (
                         <div className="card" style={{width: "32rem"}} key={key} >
                           <img
@@ -110,6 +110,7 @@ class PropertyList extends Component {
                            
                   );
                   }) 
+                  : <div  className="col-md-12 mt-50 mb-10 label label-primary"><h3 className="label label-primary">No Properties Added.</h3></div>
                 }
               </InfiniteScroll>
               {/* <InfiniteScroll
