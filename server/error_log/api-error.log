@@ -1,3 +1,7 @@
 {"level":"error","message":"[ { param: 'name', msg: 'name must not be empty', value: '' },\n  { param: 'description',\n    msg: 'description must not be empty',\n    value: '' },\n  { param: 'imgs', msg: 'imgs must not be empty', value: [] },\n  { param: 'address', msg: 'address must not be empty', value: '' },\n  { param: 'area', msg: 'area must not be empty', value: '' },\n  { param: 'price', msg: 'price must not be empty', value: '' },\n  { param: 'carpetArea',\n    msg: 'carpetArea must not be empty',\n    value: '' },\n  { param: 'carpetAreaUnit',\n    msg: 'carpetAreaUnit must not be empty',\n    value: '' } ]"}
 {"level":"error","message":"Retrive Properties Error: SequelizeConnectionError: Access denied for user 'root'@'localhost'"}
 {"level":"error","message":"Retrive Properties Error: SequelizeConnectionError: Access denied for user 'root'@'localhost'"}
+{"level":"error","message":"Retrive Properties Error: ReferenceError: cnt is not defined"}
+{"level":"error","message":"Retrive Properties Error: ReferenceError: cnt is not defined"}
+{"level":"error","message":"Retrive Properties Error: ReferenceError: count is not defined"}
+{"level":"error","message":"SyntaxError: Identifier 'count' has already been declared"}
