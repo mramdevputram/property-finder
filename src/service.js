@@ -1,4 +1,4 @@
-const ApiBaseUrl = 'http://localhost:8011';
+const ApiBaseUrl = window.location.origin;
 
  
 export default ApiBaseUrl;
