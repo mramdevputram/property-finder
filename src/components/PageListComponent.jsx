@@ -10,7 +10,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 class PropertyList extends Component {
     state = { items: Array.from({ length: 20 }),filter:{search:'',bathroom: '',bedroom: '',priceRange: ''},propertyList: [], recentList: [{}],isDetailedPage: false,property: {}}
 
-    handleChange = ({currentTarget: input}) => {
+  handleChange = ({currentTarget: input}) => {
       const filter = this.state.filter
       filter[input.name] = input.value
       this.setState({ filter,allDataLoaded: false })
@@ -28,7 +28,7 @@ class PropertyList extends Component {
 
         let params = {params: filter}
         const {data} = await axios.get(`${ApiBaseUrl}/properties`,params)
-        console.log("data",data)
+        
         const propertyList = data.data ? this.state.propertyList.concat(data.data.propertyList)  : []
         if(Number(data.data.count) == Number(propertyList.length)){
           var allDataLoaded = true
