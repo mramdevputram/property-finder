@@ -18,29 +18,30 @@ app.use(bodyParser.json({ limit: '50mb' }));
 
 
 app.use(cors());
+require('dotenv').config();
 app.set('views', path.join(process.env.PWD, 'views'));
 app.set('view engine', 'html');
 
-require('./routes/routes').routes(app)
+require('./routes/routes').routes(app);
 
-
+console.log("---", process.env.ENV);
 
 const config = require('./config');
 // const cons = require('consolidate');
 const mysql = require('mysql2/promise');
 
 
-initialize()
+initialize();
 
 
 /* Init DB is not Exists */
-async function initialize(){
-    try{
-        const connection = await mysql.createConnection({ host:config.conn.host,port: config.conn.port, user:config.dbUser, password:config.dbPass });
+async function initialize() {
+    try {
+        const connection = await mysql.createConnection({ host: config.conn.host, port: config.conn.port, user: config.dbUser, password: config.dbPass });
         let conn = await connection.query(`CREATE DATABASE IF NOT EXISTS \`${config.dbName}\`;`);
-        console.log("DB Connected Successfully!")
-    }catch(e){
-        console.log("DB Connection Err:",e)
+        console.log("DB Connected Successfully!");
+    } catch (e) {
+        console.log("DB Connection Err:", e);
     }
 }
 

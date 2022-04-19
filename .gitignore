@@ -5,6 +5,7 @@
 /node_modules
 /.pnp
 /server/property_Image
+/server/.env
 .pnp.js
 
 # testing
