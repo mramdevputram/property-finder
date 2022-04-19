@@ -10,7 +10,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 class PropertyList extends Component {
     state = { items: Array.from({ length: 20 }),filter:{search:'',bathroom: '',bedroom: '',priceRange: ''},propertyList: [], recentList: [{}],isDetailedPage: false,property: {}}
 
-    handleChange = ({currentTarget: input}) => {
+  handleChange = ({currentTarget: input}) => {
       const filter = this.state.filter
       filter[input.name] = input.value
       this.setState({ filter,allDataLoaded: false })
@@ -28,7 +28,7 @@ class PropertyList extends Component {
 
         let params = {params: filter}
         const {data} = await axios.get(`${ApiBaseUrl}/properties`,params)
-        console.log("data",data)
+        
         const propertyList = data.data ? this.state.propertyList.concat(data.data.propertyList)  : []
         if(Number(data.data.count) == Number(propertyList.length)){
           var allDataLoaded = true
@@ -77,11 +77,11 @@ class PropertyList extends Component {
                 dataLength={this.state.propertyList.length}
                 next={this.scrollData}
                 hasMore={!this.state.allDataLoaded}
-                loader={<h4>Loading...</h4>}
+                loader={this.state.propertyList.length ? <h4>Loading...</h4> : ''}
                 scrollableTarget="scrollableDiv"
               >
                 {
-                  this.state.propertyList.map((val,key) => {
+                  this.state.propertyList && this.state.propertyList.length ? this.state.propertyList.map((val,key) => {
                     return (
                         <div className="card" style={{width: "32rem"}} key={key} >
                           <img
@@ -110,6 +110,7 @@ class PropertyList extends Component {
                            
                   );
                   }) 
+                  : <div  className="col-md-12 mt-50 mb-10 label label-primary"><h3 className="label label-primary">No Properties Added.</h3></div>
                 }
               </InfiniteScroll>
               {/* <InfiniteScroll

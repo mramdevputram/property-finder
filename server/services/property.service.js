@@ -37,6 +37,9 @@ async function retriveProperties(retObj) {
                     [Op.lte]: max
                   }
         }
+    //    const {count, rows} = await propertyTable.findAndCountAll(findSqlQry);
+    //    console.log("CNTTTTTT: - - - ",cnt)
+    //    console.log("rows: - - - ",rows)
         const count = await propertyTable.count({});
 
         let propertiesData =  await propertyTable.findAll(findSqlQry);

@@ -12,8 +12,8 @@ class AddProperty extends Component {
             address: '',
             area: '',
             price: '',
-            bedroom: 1,
-            bath: 1,
+            bedroom: '1',
+            bath: '1',
             carpetArea: '',
             carpetAreaUnit: 'Sq. Yd.'
     },
@@ -82,16 +82,16 @@ class AddProperty extends Component {
       if(property.price.trim() == '') 
         errors.price = 'price is required'  
 
-      if(![1,2,3,4,5].includes(property.bedroom)) 
+      if(!['1','2','3','4','5'].includes(property.bedroom)) 
         errors.bedroom = 'bedroom is required'
 
-      if(![1,2,3,4,5].includes(property.bath)) 
+      if(!['1','2','3','4','5'].includes(property.bath)) 
         errors.bath = 'bath is required'
 
       if(property.carpetArea.trim() == '') 
         errors.carpetArea = 'carpet area is required'
 
-      if(!['Sq. Yd.','Sq. Ft.','Sq. Mt.'].includes(property.bath)) 
+      if(!['Sq. Yd.','Sq. Ft.','Sq. Mt.'].includes(property.carpetAreaUnit)) 
         errors.carpetAreaUnit = 'carpet area unit is required'
       
       return Object.keys(errors).length === 0 ? null : errors
@@ -210,11 +210,11 @@ class AddProperty extends Component {
                       name="bedroom"
                       id="Bedroom"
                     >
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                      <option>5</option>
+                      <option value='1'>1</option>
+                      <option value='2'>2</option>
+                      <option value='3'>3</option>
+                      <option value='4'>4</option>
+                      <option value='5'>5</option>
                     </select>
                     {this.state.errors && this.state.errors.bedroom && <div className="alert-danger">{this.state.errors.bedroom}</div>}
                   </div>
@@ -226,11 +226,11 @@ class AddProperty extends Component {
                       name="bath"
                       id="bath"
                     >
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                      <option>5</option>
+                      <option value='1'>1</option>
+                      <option value='2'>2</option>
+                      <option value='3'>3</option>
+                      <option value='4'>4</option>
+                      <option value='5'>5</option>
                     </select>
                     {this.state.errors && this.state.errors.bath && <div className="alert-danger">{this.state.errors.bath}</div>}
                   </div>
