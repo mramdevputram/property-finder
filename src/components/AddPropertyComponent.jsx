@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import ApiBaseUrl from '../service';
-import { async } from 'q';
 class AddProperty extends Component {
 
     state = { 
@@ -64,22 +63,22 @@ class AddProperty extends Component {
       const errors = {}
       const { property } = this.state
       console.log("property",property)
-      if(property.name.trim() == '') 
+      if(property.name.trim() === '') 
         errors.name = 'name is required'
 
-      if(property.description.trim() == '') 
+      if(property.description.trim() === '') 
         errors.description = 'description is required'  
 
       if(!property.imgs.length) 
         errors.imgs = 'images is required'
 
-      if(property.address.trim() == '') 
+      if(property.address.trim() === '') 
         errors.address = 'address is required'  
 
-      if(property.area.trim() == '') 
+      if(property.area.trim() === '') 
         errors.area = 'area is required'
 
-      if(property.price.trim() == '') 
+      if(property.price.trim() === '') 
         errors.price = 'price is required'  
 
       if(!['1','2','3','4','5'].includes(property.bedroom)) 
@@ -88,7 +87,7 @@ class AddProperty extends Component {
       if(!['1','2','3','4','5'].includes(property.bath)) 
         errors.bath = 'bath is required'
 
-      if(property.carpetArea.trim() == '') 
+      if(property.carpetArea.trim() === '') 
         errors.carpetArea = 'carpet area is required'
 
       if(!['Sq. Yd.','Sq. Ft.','Sq. Mt.'].includes(property.carpetAreaUnit)) 
@@ -105,7 +104,7 @@ class AddProperty extends Component {
         if(errors) return;
         let {property} = this.state
         const response = await axios.post(`${ApiBaseUrl}/properties`,property)
-        if(response && response.data && response.data.code == 200) this.props.history.push("/properties")
+        if(response && response.data && response.data.code === 200) this.props.history.push("/properties")
     }
 
     render() { 

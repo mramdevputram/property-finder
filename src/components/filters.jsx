@@ -6,7 +6,6 @@ const Filters = (props) => {
     const handleChange = ({currentTarget: input}) => {
         let filter = filters
         filter[input.name] = input.value
-        
         setFilter(filter)
     }
 

@@ -3,7 +3,6 @@ import logo from '../logo.svg';
 import axios from 'axios';
 import ApiBaseUrl from '../service';
 import ListPage from '../components/Sublist';
-import SlideBar from '../components/SlideBar';
 import Filters from '../components/filters'
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -22,15 +21,13 @@ class PropertyList extends Component {
 
      getData = async (property,isDetails,filter) => {
         filter = filter || {}
-        let priceRange = filter.priceRange
         filter['limit'] = 2
         filter['offset'] = this.state.propertyList.length
 
         let params = {params: filter}
         const {data} = await axios.get(`${ApiBaseUrl}/properties`,params)
-        
         const propertyList = data.data ? this.state.propertyList.concat(data.data.propertyList)  : []
-        if(Number(data.data.count) == Number(propertyList.length)){
+        if(Number(data.data.count) === Number(propertyList.length)){
           var allDataLoaded = true
         }
         // console.log(":::::: == = ",propertyList)
@@ -51,7 +48,7 @@ class PropertyList extends Component {
         let obj = {id: property.id}
         obj['isFavorite'] =  isFavorite ? !property['isFavorite'] : property['isFavorite']
         obj['for'] = isFavorite ? 'Favorite' : 'ViewCount'
-        const {data} = await axios.put(`${ApiBaseUrl}/properties`,obj)   
+        // const {data} = await axios.put(`${ApiBaseUrl}/properties`,obj)   
         let propertyList = []
         this.setState({ propertyList })
         await this.getData(property,!isFavorite)
@@ -72,7 +69,6 @@ class PropertyList extends Component {
                 <Filters getFilterData={this.getData}></Filters>
               </div>
               <div id="scrollableDiv" className="col-md-8 overflow-auto scrollbar scrollbar-morpheus-den"  style={{ height: "30rem"}}>
-             
               <InfiniteScroll
                 dataLength={this.state.propertyList.length}
                 next={this.scrollData}
@@ -88,23 +84,23 @@ class PropertyList extends Component {
                             className="card-img-top"
                             src={
                               val.thumbNails && val.thumbNails[0]
-                                ? `${ApiBaseUrl}/${val.thumbNails[0]}`
+                                ? `${ApiBaseUrl}/image/property_1655590550780.png`
                                 : logo
                             }
-                            alt="Card image cap"
+                            alt="Card cap"
                           />
                            <ul className="list-group list-group-flush">
                             <li className="list-group-item">Area: {val.area}</li>
                             <li className="list-group-item">Price: {val.price}</li>
                           </ul>
                           <div className="card-body">
-                                    <a  className="card-link"  onClick={() => this.setProperty(val,true)} >
+                                    <label  className="card-link"  onClick={() => this.setProperty(val,true)} >
                                       {!val.isFavorite ? 'Favorite' : 'Not Favorite'} 
-                                    </a>
+                                    </label>
                           </div>
                           <div className="card-footer bg-transparent">
                               <span> {val.viewCount} Views</span><br></br>
-                              <span>Posted {new Date().getDay() - new Date(val.createdAt).getDay() == 0 ? 'Today' : new Date().getDay() - new Date(val.createdAt).getDay() +' Days Ago'}</span>
+                              <span>Posted {new Date().getDay() - new Date(val.createdAt).getDay() === 0 ? 'Today' : new Date().getDay() - new Date(val.createdAt).getDay() +' Days Ago'}</span>
                           </div>
                         </div>
                            

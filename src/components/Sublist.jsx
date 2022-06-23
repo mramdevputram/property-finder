@@ -13,7 +13,7 @@ const ListPage = ({propertyList}) => {
                     ? `${ApiBaseUrl}/${val.imgs[0]}`
                     : logo
                 }
-                alt="Card image cap"
+                alt="Card cap"
               />
                 <div className="card-body">
                 <ul className="list-group list-group-flush">

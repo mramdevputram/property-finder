@@ -10,7 +10,7 @@ const SlideBar = ({property,onListPage}) => {
       <div className="row">
         <div className="col-md-12">
           <div className="card">
-            <img className="card-img-top" src={images[0]} alt="Card image cap" />
+            <img className="card-img-top" src={images[0]} alt="Card cap" />
             <div className="card-body">
                 <h5 className="card-title">{property.name}</h5>
                 <p className="card-text">{property.description}</p>
@@ -29,7 +29,7 @@ const SlideBar = ({property,onListPage}) => {
                     
             </ul>
             <div className="card-footer text-muted">
-                Posted {new Date().getDay() - new Date(property.createdAt).getDay() == 0 ? 'Today' : new Date().getDay() - new Date(property.createdAt).getDay() +' Days Ago'}
+                Posted {new Date().getDay() - new Date(property.createdAt).getDay() === 0 ? 'Today' : new Date().getDay() - new Date(property.createdAt).getDay() +' Days Ago'}
             </div>
           </div>
         </div>
